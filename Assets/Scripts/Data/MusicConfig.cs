@@ -6,6 +6,9 @@ namespace Data
 	public sealed class MusicConfig : ScriptableObject
 	{
 		[SerializeField] private AudioClip[] songs;
+		[SerializeField] private float normalizationValue;
+
+		public float NormalizationValue => normalizationValue;
 
 		public AudioClip GetRandomSong()
 		{

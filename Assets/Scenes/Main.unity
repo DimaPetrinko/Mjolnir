@@ -524,6 +524,7 @@ MonoBehaviour:
   stopButton: {fileID: 599846422}
   backgroundImage: {fileID: 1911607621}
   audioSource: {fileID: 2078287609}
+  defaultSaturationAndValue: {r: 0.9, g: 0.18202248, b: 0.18202248, a: 1}
   backgroundTint: {r: 0.9, g: 0.9, b: 0.9, a: 1}
 --- !u!4 &935168957
 Transform:
@@ -759,7 +760,8 @@ AudioSource:
   m_GameObject: {fileID: 2078287608}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 3a82da65167d8f949be073a3167c7736,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1

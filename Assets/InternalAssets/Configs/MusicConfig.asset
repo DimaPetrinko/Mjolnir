@@ -16,3 +16,4 @@ MonoBehaviour:
   - {fileID: 8300000, guid: dbc412f1cadf4984ea8ae91e45c76f04, type: 3}
   - {fileID: 8300000, guid: ff9091b777016d74f9d9c8712019b44b, type: 3}
   - {fileID: 8300000, guid: f7b77474f74fb134798342effbc6411e, type: 3}
+  normalizationValue: 1500

@@ -13,11 +13,14 @@ namespace Game
 		[SerializeField] private Button stopButton;
 		[SerializeField] private Image backgroundImage;
 		[SerializeField] private AudioSource audioSource;
+		[SerializeField] private Color defaultSaturationAndValue;
 		[SerializeField] private Color backgroundTint;
 
 		private Image playButtonImage;
 		private Image stopButtonImage;
 		private float currentHue;
+		private float defaultColorSaturation;
+		private float defaultColorValue;
 
 		private void Awake()
 		{
@@ -27,6 +30,7 @@ namespace Game
 			playButtonImage = playButton.GetComponent<Image>();
 			stopButtonImage = stopButton.GetComponent<Image>();
 			currentHue = Random.value;
+			Color.RGBToHSV(defaultSaturationAndValue, out var hue, out defaultColorSaturation, out defaultColorValue);
 
 			StopMusic();
 		}
@@ -38,13 +42,18 @@ namespace Game
 
 			StopAllCoroutines();
 
-			// get random song
 			var clip = musicConfig.GetRandomSong();
 			audioSource.clip = clip;
-			// get random time
+
+			var randomSecond = Random.Range(0, clip.length);
+			audioSource.time = randomSecond;
 			audioSource.Play();
-			// set random pitch
-			// start detecting peaks and changing colors
+
+			var randomPitch = Random.Range(0.5f, 2f);
+			audioSource.outputAudioMixerGroup.audioMixer.SetFloat("pitch", randomPitch);
+			// pitch is an exposed parameters in audio mixer. it is a parameter in pitch
+			// effect which lets you change pitch without speeding up audio
+
 			StartCoroutine(PlayColorsWithMusic());
 		}
 
@@ -59,35 +68,45 @@ namespace Game
 			audioSource.Stop();
 		}
 
-		private void SetColor(Color color)
+		private void PaintInterface(Color color)
 		{
 			backgroundImage.color = color * backgroundTint;
 			playButtonImage.color = color;
 			stopButtonImage.color = color;
 		}
-		
+
+		private void WarpColor(float hueDelta)
+		{
+			if (float.IsNaN(hueDelta)) hueDelta = 0f;
+			var color = Color.HSVToRGB(Mathf.Repeat(currentHue, 1f), defaultColorSaturation, defaultColorValue);
+			color.a = 1f;
+			currentHue += hueDelta;
+			PaintInterface(color);
+		}
+
 		private IEnumerator PlayColorsWithMusic()
 		{
-			// while audio source is playing
+			var soundAnalyzer = new SoundAnalyzer(audioSource);
 			while (audioSource.isPlaying)
 			{
-				// get value from audio source
-				// detect is this value is right for color change
-				// change to random color
+				var value = soundAnalyzer.AnalyzeSound();
+				var normalizedValue = value / musicConfig.NormalizationValue;
+				var finalValue = 
+					normalizedValue * normalizedValue;
+//					Mathf.Tan(normalizedValue);
+				WarpColor(finalValue);
 				yield return null;
 			}
+
+			StopMusic();
 		}
 
 		private IEnumerator ShowColorWarping()
 		{
-			Color color;
-			color.a = 1;
 			const float hueDelta = 1 / 255f * 0.2f;
 			while (true)
 			{
-				color = Color.HSVToRGB(Mathf.Repeat(currentHue, 1f), 1, 1);
-				currentHue += hueDelta;
-				SetColor(color);
+				WarpColor(hueDelta);
 				yield return null;
 			}
 		}
